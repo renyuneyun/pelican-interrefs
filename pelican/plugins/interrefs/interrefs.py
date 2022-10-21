@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 
 absolute_url_pattern = re.compile(r'https?://')
+anchor_url_pattern = re.compile(r'^#')
 
 
 @dataclass
@@ -44,6 +45,8 @@ def add_inter_refs(generator):
             else:
                 return False
         else:
+            if anchor_url_pattern.match(url):
+                return False
             return True
 
     num_forward_refs = settings.get("FORWARD_REFS", None)
