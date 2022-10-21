@@ -38,13 +38,13 @@ def add_inter_refs(generator):
     siteurl = settings.get('SITEURL', '')
 
     def is_site_url(url):
-        if siteurl:
-            return url.startswith(siteurl)
-        else:
-            if absolute_url_pattern.match(url):
-                return False
+        if absolute_url_pattern.match(url):
+            if siteurl:
+                return url.startswith(siteurl)
             else:
-                return True
+                return False
+        else:
+            return True
 
     num_forward_refs = settings.get("FORWARD_REFS", None)
     num_backward_refs = settings.get("BACKWARD_REFS", None)
