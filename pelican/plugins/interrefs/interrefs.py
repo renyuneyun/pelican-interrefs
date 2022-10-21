@@ -5,6 +5,14 @@
 Inter-references plugin for Pelican
 ===================================
 Adds interrefs variable (which contains fields forward and backward) to article's context
+
+TODO
+---------------
+- i18n_subsite is not correct handled. Though the generated result is of no problem
+  Maybe worth figuring out why, and fix it. I believe currently linking across
+  i18n_subsites won't be identified correctly.
+- Complexity is high (O(n^3)). See the comment of relevant section
+- Maybe using other signals is a neater solution
 '''
 
 import logging
