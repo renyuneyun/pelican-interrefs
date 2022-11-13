@@ -24,6 +24,7 @@ from dataclasses import dataclass
 
 from bs4 import BeautifulSoup
 from pelican import signals
+from pelican.generators import ArticlesGenerator
 
 
 log = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ class InterRef:
         return bool(self.forward or self.backward)
 
 
-def add_inter_refs(generator):
+def add_inter_refs_article(generator):
     settings = generator.settings
     siteurl = settings.get('SITEURL', '')
 
@@ -67,7 +68,8 @@ def add_inter_refs(generator):
         article_url = article.url
         article_urls[article_url] = article
 
-        soup_doc = BeautifulSoup(article._content, 'html.parser')  # Use article._content rather than article.content, because the other option will raise problems
+        # Note: previously used article._content rather than article.content, because the other option will raise problems (e.g. images won't load) when using signal article_generators_finalized. But now uses different signal, which no longer has this issue.
+        soup_doc = BeautifulSoup(article.content, 'html.parser')
         for anchor in soup_doc(['a', 'object']):
             if 'href' not in anchor.attrs:
                 continue
@@ -106,6 +108,11 @@ def add_inter_refs(generator):
         article.interrefs = interrefs
 
 
+def add_inter_refs_generators(generators):
+    for generator in generators:
+        if isinstance(generator, ArticlesGenerator):
+            add_inter_refs_article(generator)
+
 
 def register():
-    signals.article_generator_finalized.connect(add_inter_refs)
+    signals.all_generators_finalized.connect(add_inter_refs_generators)
